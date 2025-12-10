@@ -5,7 +5,7 @@ class Node:
         self.data = data
         self.next = None
 
-list1 = ['apple', 2, 14, 'apple', 323, 13, 13, 13, 323234, 13, 412, 'bananana']
+list1 = ['apple',  13, 13, 13, 412, 'bananana']
 directory = {}
 
 for i, n in enumerate(list1):
@@ -21,8 +21,7 @@ def assign(first):
         
 for t in dirkeys[:-1]:
     directory[t].next = directory[t + 1]
-
-assign(directory[dirkeys[0]])   
+ 
 
 def pickconnect(node): #first attempt
     freqtable = []
@@ -34,9 +33,8 @@ def pickconnect(node): #first attempt
         NextNode = NextNode.next
     print(pd.Series(freqtable).value_counts())
 
-pickconnect(directory[dirkeys[0]])   
-
 def outcomedist(node): #second attempt
+    global inout
     inrange = []
     outrange = []
     CurrentNode = node
@@ -48,6 +46,13 @@ def outcomedist(node): #second attempt
         NextNode = NextNode.next
     inouttotal = zip(inrange, outrange)
     inout = pd.DataFrame(inouttotal, columns= ['Input_Node', 'Output_Node'])
-    print(inout.groupby('Input_Node')['Output_Node'].value_counts('Output_Node'))
-    
+
 outcomedist(directory[dirkeys[0]])
+
+def maxprob(node):
+    CurrentNode = node
+    while CurrentNode.next is not None:
+        print(inout[inout['Input_Node'] == CurrentNode.data]['Output_Node'].value_counts('Output_Node').idxmax())
+        CurrentNode = CurrentNode.next
+
+maxprob(directory[dirkeys[0]])
