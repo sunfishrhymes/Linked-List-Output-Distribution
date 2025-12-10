@@ -1,2 +1,2 @@
 # Linked-List-Distribution-Output
-Implementing DSA structure into Pandas methods
+With this, I wanted to determine a way to change elements of a list into a linked list, where I could determine the likelihood of a specific output given an input node. I tried so using two methods, the first of which was able to calculate the total amount of unique sequences sharing an input and output, and the second, where I was able to delve into more details to ascertain probability. I could improve on code efficiency and will exercise quicker ways for the solution to be calculated. I look forward to integrating this method into future projects.
