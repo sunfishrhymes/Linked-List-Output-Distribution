@@ -1,0 +1,161 @@
+import pandas as pd
+
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+        self.left = None
+        self.right = None
+
+list1 = ['apple',  13, 13, 13, 412, 'bananana']
+directory = {}
+
+for i, n in enumerate(list1):
+    directory[i] = Node(n)
+
+dirkeys = list(directory.keys())
+
+for t in dirkeys[:-1]:
+    directory[t].next = directory[t + 1]
+
+def assign(first):
+    CurrentNode = first
+    while CurrentNode:
+        print (CurrentNode.data)
+        CurrentNode = CurrentNode.next
+
+def pickconnect(node): #first attempt
+    freqtable = []
+    CurrentNode = node
+    NextNode = CurrentNode.next
+    while CurrentNode and NextNode:
+        freqtable.append([CurrentNode.data, NextNode.data])
+        CurrentNode = CurrentNode.next
+        NextNode = NextNode.next
+    print(pd.Series(freqtable).value_counts())
+
+def outcomedist(node): #second attempt
+    global inout
+    inrange = []
+    outrange = []
+    CurrentNode = node
+    NextNode = CurrentNode.next
+    while CurrentNode and NextNode:
+        inrange.append(CurrentNode.data)
+        outrange.append(NextNode.data)
+        CurrentNode = CurrentNode.next
+        NextNode = NextNode.next
+    inouttotal = zip(inrange, outrange)
+    inout = pd.DataFrame(inouttotal, columns= ['Input_Node', 'Output_Node'])
+
+outcomedist(directory[0])
+
+def maxprob(node):
+    CurrentNode = node
+    global mV1, mV2, maxmin
+    mV1 = []
+    mP1 =  []
+    mV2 = []
+    mP2 = []
+    curr = []
+    while CurrentNode.next is not None:
+        curr.append(CurrentNode.data)
+        maxVal = inout[inout['Input_Node'] == CurrentNode.data]['Output_Node'].value_counts('Output_Node').idxmax()
+        mV1.append(maxVal)
+        maxProb = inout[inout['Input_Node'] == CurrentNode.data]['Output_Node'].value_counts('Output_Node').agg('max')
+        mP1.append(maxProb)
+        minVal = inout[inout['Input_Node'] == CurrentNode.data]['Output_Node'].value_counts('Output_Node').idxmin()
+        mV2.append(minVal)
+        minProb = inout[inout['Input_Node'] == CurrentNode.data]['Output_Node'].value_counts('Output_Node').agg('min')
+        mP2.append(minProb)
+        CurrentNode = CurrentNode.next
+    maxmin = pd.DataFrame(curr, columns = ['Input_Node'])
+    maxmin['Most_Likely_Outcome'] = mV1
+    maxmin['Likelihood_High'] = mP1
+    maxmin['Least_Likely_Outcome'] = mV2
+    maxmin['Likelihood_Low'] = mP2
+
+maxprob(directory[0])
+
+probleasts = {}
+probmosts = {}
+
+list2 = list(maxmin['Input_Node'])
+dir2 = {}
+
+for l, v in enumerate(list2):
+    dir2[l] = Node(v)
+    dir2[l].left = Node(maxmin['Least_Likely_Outcome'][l])
+    probleasts[l] = dir2[l].left
+    dir2[l].right = Node(maxmin['Most_Likely_Outcome'][l])
+    probmosts[l] = dir2[l].right
+
+probleastskeys = list(probleasts.keys())
+probmostskeys = list(probmosts.keys())
+dir2keys = list(dir2.keys())
+
+for a in probleastskeys[:-1]:
+    probleasts[a].next = probleasts[a + 1]
+
+for a in probmostskeys[:-1]:
+    probmosts[a].next = probmosts[a + 1]
+
+for a in dir2keys[:-1]:
+    dir2[a].next = dir2[a + 1]
+
+def rootnado(node):
+    CurrentNode = node
+    LeftNode = CurrentNode.left
+    RightNode = CurrentNode.right
+    while CurrentNode and LeftNode and RightNode:
+        print (LeftNode.data, end = '<-')
+        LeftNode = LeftNode.next
+        print (CurrentNode.data, end = '->')
+        CurrentNode = CurrentNode.next
+        print (RightNode.data)
+        RightNode = RightNode.next
+    
+rootnado(dir2[0])
+
+def specificleft(node, z):
+    CurrentNode = node
+    LeftNode = CurrentNode.left
+    lefties = []
+    parents = []
+    while CurrentNode:
+        parents.append(CurrentNode.data)
+        if CurrentNode == directory[z]:
+            LeftNode = Node('examplw')
+            lefties.append(LeftNode.data)
+        else:
+            lefties.append(None)
+        CurrentNode = CurrentNode.next
+    leftvals = zip(parents, lefties)
+    global lefts
+    lefts = pd.DataFrame(leftvals, columns = ['Parent_Node', 'Output_Node'])
+    print (lefts)
+
+list2 = [31, 'gus', 41, 42, 44, 44]
+dict2 = {}
+
+for i, n in enumerate(list2):
+    dict2[i] = Node(n)
+
+dirkeys2 = list(dict2.keys())
+bt = {}
+
+for q in dirkeys2[:-1]:
+    dict2[q].next = dict2[q + 1]
+    directory[q].left = dict2[q]
+    bt[q] = (directory[q], dict2[q])
+
+def redesign(node):
+    CurrentNode = node
+    LeftNode = CurrentNode.left
+    while CurrentNode and LeftNode:
+        CurrentNode.right = CurrentNode.next
+        print (CurrentNode.data)
+        print(LeftNode.data)
+        CurrentNode = CurrentNode.right
+        LeftNode = LeftNode.next
+
